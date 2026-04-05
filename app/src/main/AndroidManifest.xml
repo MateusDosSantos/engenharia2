@@ -15,6 +15,9 @@
         android:theme="@style/Theme.Projeto2Engenharia"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".TelaDeBotoes"
+            android:exported="false" />
+        <activity
             android:name=".TelaSemXML"
             android:exported="false" />
         <activity
