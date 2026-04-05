@@ -1,5 +1,6 @@
 package com.example.projeto2engenharia;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -14,7 +15,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
   private ImageButton imageButton, imageButton2;
-  private Button btn1, btn2, btn3;
+  private Button btn1, btn2, btn3, btn4;
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +41,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         btn3 = findViewById(R.id.button5);
         btn3.setOnClickListener(this);
+
+        btn4 = findViewById(R.id.button6);
+        btn4.setOnClickListener(this);
     }
 
     @Override
@@ -58,6 +63,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if(view == btn3){
             startActivity(new Intent(this, TelaSemXML.class));
+        }
+        if(view == btn4){
+            startActivity(new Intent(this, TelaDeBotoes.class));
 
         }
 
