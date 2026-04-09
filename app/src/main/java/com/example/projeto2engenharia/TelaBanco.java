@@ -2,8 +2,11 @@ package com.example.projeto2engenharia;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -18,11 +21,12 @@ import java.util.ArrayList;
 
 public class TelaBanco extends AppCompatActivity implements View.OnClickListener{
     private TextInputEditText nome, cpf, telefone, cidade, idade, profissao;
-    private Button btnSalvar, btnListar;
+    private Button btnSalvar, btnListar, btnAtualizarTelefone, btnDeletar;
     private BD bd;
-
-
-
+    private ArrayList<Pessoa> lista;
+    private int indiceLista;
+    private ImageButton antes, depois;
+    private TextView placar;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,20 +39,86 @@ public class TelaBanco extends AppCompatActivity implements View.OnClickListener
             return insets;
         });
 
+        lista = new ArrayList<Pessoa>();
+        indiceLista = 0;
+
+        antes = findViewById(R.id.imageButton3);
+        antes.setEnabled(false);
+        antes.setOnClickListener(this);
+
+        depois = findViewById(R.id.imageButton4);
+        depois.setEnabled(false);
+        depois.setOnClickListener(this);
+
+        placar = findViewById(R.id.textView2);
+
         btnSalvar = findViewById(R.id.salvar);
         btnSalvar.setOnClickListener(this);
+
+        btnDeletar = findViewById(R.id.button10);
+        btnDeletar.setOnClickListener(this);
+
+
+        btnAtualizarTelefone = findViewById(R.id.button8);
+        btnAtualizarTelefone.setOnClickListener(this);
 
         btnListar = findViewById(R.id.button9);
         btnListar.setOnClickListener(this);
 
         nome = findViewById(R.id.idnome);
         cpf = findViewById(R.id.idCPF);
+        cpf.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(!b){
+                    String cpfModificado = cpf.getText().toString().replaceAll("[^\\d]", "");
+                    if(cpfModificado.length() >=11){
+                        cpfModificado = cpfModificado.substring(0,3)+"."+cpfModificado.substring(3,6)+"."+cpfModificado.substring(6,9)+"-"+cpfModificado.substring(9);
+                        cpf.setText(cpfModificado);
+                    }
+
+                }
+            }
+        });
         telefone = findViewById(R.id.idTelefone);
+        telefone.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(!b){
+                    String telModificado = telefone.getText().toString().replaceAll("[^\\d]", "");
+                    if(telModificado.length() >=10){
+                        Log.d("##", "dentro do IF");
+                        telModificado = "(" +telModificado.substring(0,2)+")"+telModificado.substring(2);
+                        telefone.setText(telModificado);
+                   }
+                }
+
+            }
+        });
+
+
+
+
+
+
         cidade = findViewById(R.id.idCidade);
         idade = findViewById(R.id.idIdade);
         profissao = findViewById(R.id.idProfissao);
         bd = new BD(this, "banco", null, 1);
 
+    }
+    public void atualizaPLacar(){
+        int x = indiceLista;
+        x++;
+        placar.setText("Registro "+Integer.toString(x)+" de "+Integer.toString(lista.size()));
+    }
+    public void carregaDadosInterface(){
+        this.nome.setText(lista.get(indiceLista).getNome());
+        this.cpf.setText(lista.get(indiceLista).getCpf());
+        this.telefone.setText(lista.get(indiceLista).getTelefone());
+        this.idade.setText(lista.get(indiceLista).getIdade());
+        this.profissao.setText(lista.get(indiceLista).getProfissao());
+        this.cidade.setText(lista.get(indiceLista).getCidade());
     }
 
     @Override
@@ -72,24 +142,57 @@ public class TelaBanco extends AppCompatActivity implements View.OnClickListener
             Toast.makeText(this, "Dados Salvos", Toast.LENGTH_SHORT).show();
         }
         if(view == btnListar){
-
-            ArrayList<Pessoa> lista = new ArrayList<Pessoa>();
             lista = bd.getLista();
-            Pessoa p = new Pessoa();
-            p.setNome(lista.get(0).getNome());
-            p.setCpf(lista.get(0).getCpf());
-            p.setCidade(lista.get(0).getCidade());
-            p.setIdade(lista.get(0).getIdade());
-            p.setProfissao(lista.get(0).getProfissao());
-            p.setTelefone(lista.get(0).getTelefone());
-            this.nome.setText(p.getNome());
-            this.cpf.setText(p.getCpf());
-            this.telefone.setText(p.getTelefone());
-            this.idade.setText(p.getIdade());
-            this.profissao.setText(p.getProfissao());
-            this.cidade.setText(p.getCidade());
-            Toast.makeText(this, "Dados Listados", Toast.LENGTH_SHORT).show();
-
+            if(!lista.isEmpty()){
+                this.nome.setEnabled(false);
+                this.cpf.setEnabled(false);
+                this.idade.setEnabled(false);
+                this.cidade.setEnabled(false);
+                this.profissao.setEnabled(false);
+                antes.setEnabled(true);
+                depois.setEnabled(true);
+                indiceLista= 0;
+                carregaDadosInterface();
+                atualizaPLacar();
+                Toast.makeText(this, "Dados Listados", Toast.LENGTH_SHORT).show();
+            }
+        }
+        if(view == antes){
+            indiceLista--;
+            if(indiceLista<0){
+                indiceLista = lista.size()-1;
+            }
+            carregaDadosInterface();
+            atualizaPLacar();
+        }
+        if(view == depois){
+            indiceLista++;
+            if(indiceLista >= lista.size()){
+                indiceLista=0;
+            }
+            carregaDadosInterface();
+            atualizaPLacar();
+        }
+        if(view == btnAtualizarTelefone){
+            String cpf = this.cpf.getText().toString();
+            String novoTelefone = this.telefone.getText().toString();
+            bd.atualizarTelefone(cpf, novoTelefone);
+            lista = null;
+            lista = bd.getLista();
+            indiceLista = 0;
+            carregaDadosInterface();
+            atualizaPLacar();
+            Toast.makeText(this, "Telefone Atualizado", Toast.LENGTH_SHORT).show();
+        }
+        if(view == btnDeletar){
+            String cpf = this.cpf.getText().toString();
+            bd.deletarRegistro(cpf);
+            lista = null;
+            lista = bd.getLista();
+            indiceLista = 0;
+            carregaDadosInterface();
+            atualizaPLacar();
+            Toast.makeText(this, "Registro Deletado", Toast.LENGTH_SHORT).show();
 
         }
 
