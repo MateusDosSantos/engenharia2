@@ -80,6 +80,20 @@ public class BD extends SQLiteOpenHelper {
 
       return lista;
     }
+    public boolean atualizaTelefone(String cpf, String novo_telefone){
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues valores = new ContentValues();
+        valores.put("telefone", novo_telefone);
+        db.update("pessoa", valores, "cpf=?", new String[]{cpf});
+        db.close();
+        Log.i("##", "Telefone Atualizado");
+        return true;
+    }
+    public void deletar(String cpf){
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("pessoa", "cpf=?", new String[]{cpf});
+        db.close();
+    }
 
 
     @Override
