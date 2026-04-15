@@ -1,6 +1,7 @@
 package com.example.projeto2engenharia;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -29,7 +30,14 @@ private BD bd;
         recycler = findViewById(R.id.recycler);
         bd = new BD(this, "banco", null, 1);
 
-        Adaptador adaptador = new Adaptador(bd.getLista());
+        Adaptador adaptador = new Adaptador(bd.getLista(), new Adaptador.OnItemClick() {
+            @Override
+            public void onClick(Pessoa p) {
+                startActivity(new Intent(TelaRecycler.this, MainActivity.class));
+            }
+        });
+
+
         RecyclerView.LayoutManager manager = new GridLayoutManager(this,2);
         recycler.setLayoutManager(manager);
         recycler.setHasFixedSize(true);

@@ -25,15 +25,14 @@ public class Adaptador extends RecyclerView.Adapter<RecyHolder>  {
                 R.layout.layout_recycler, parent, false);
         return new RecyHolder(view);
     }
-    public Adaptador(ArrayList<Pessoa> lista){
+    public Adaptador(ArrayList<Pessoa> lista, OnItemClick listener){
 
         this.lista = lista;
-       // this.listener = listener;
+        this.listener = listener;
     }
     public interface OnItemClick {
         void onClick(Pessoa p);
     }
-
     @Override
     public void onBindViewHolder(@NonNull RecyHolder holder, int position) {
             Pessoa p = new Pessoa();
@@ -43,19 +42,16 @@ public class Adaptador extends RecyclerView.Adapter<RecyHolder>  {
             holder.t_idade.setText(lista.get(position).getIdade());
             holder.t_profissao.setText(lista.get(position).getProfissao());
             holder.t_telefone.setText(lista.get(position).getTelefone());
-
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
                     listener.onClick(p);
                 }
             });
     }
-
     @Override
     public int getItemCount() {
         return lista.size();
     }
-
-
 }
